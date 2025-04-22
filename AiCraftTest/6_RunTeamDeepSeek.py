@@ -1,5 +1,6 @@
 import os
 import asyncio
+from dotenv import load_dotenv
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
@@ -8,16 +9,27 @@ from autogen_agentchat.ui import Console
 from autogen_core.models import ModelFamily
 
 
-# 设置环境变量
-os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-os.environ["OPENAI_API_KEY"] = "sk-bbac7524061c4acfb485f953e402121274f66"
+# 加载.env文件中的环境变量
+load_dotenv()
 
+# 设置OpenAI API密钥和基础URL
+os.environ.setdefault("OPENAI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+# 使用.env文件中的API密钥，如果不存在则使用默认值
+if not os.environ.get("OPENAI_API_KEY"):
+    print("警告: 未找到OPENAI_API_KEY环境变量。请在.env文件中设置此变量。")
+
+# 设置GitHub API密钥，如果有的话
+github_token = os.environ.get("GITHUB_TOKEN")
+if not github_token:
+    print("警告: 未找到GITHUB_TOKEN环境变量。某些GitHub API功能可能受限。")
+else:
+    print(f"成功加载GitHub令牌: {github_token[:4]}...{github_token[-4:]}")
 
 # 定义LLM
 model_client = OpenAIChatCompletionClient(
-    model="deepseek-r1",
+    model="qwen-plus",  # 使用阿里千问，支持函数调用
     model_info={
-        "function_calling": False,
+        "function_calling": True,
         "json_output": False,
         "vision": False,
         "stream": True,
