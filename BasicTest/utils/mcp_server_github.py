@@ -546,6 +546,35 @@ async def serve() -> None:
                     },
                     "required": ["owner", "repo"]
                 }
+            ),
+            Tool(
+                name="list_commits",
+                description="获取GitHub存储库的提交记录",
+                inputSchema={
+                    "type": "object", 
+                    "properties": {
+                        "owner": {"type": "string", "description": "存储库所有者"},
+                        "repo": {"type": "string", "description": "存储库名称"},
+                        "sha": {"type": "string", "description": "分支名称、标签或提交SHA"},
+                        "path": {"type": "string", "description": "仅包含此文件路径的提交"},
+                        "per_page": {"type": "integer", "description": "每页结果数，最大30"},
+                        "page": {"type": "integer", "description": "页码，从1开始"}
+                    },
+                    "required": ["owner", "repo"]
+                }
+            ),
+            Tool(
+                name="get_commit",
+                description="获取GitHub存储库的特定提交详情",
+                inputSchema={
+                    "type": "object", 
+                    "properties": {
+                        "owner": {"type": "string", "description": "存储库所有者"},
+                        "repo": {"type": "string", "description": "存储库名称"},
+                        "sha": {"type": "string", "description": "提交SHA"}
+                    },
+                    "required": ["owner", "repo", "sha"]
+                }
             )
         ]
     
@@ -639,6 +668,42 @@ async def serve() -> None:
                 except Exception as e:
                     return [TextContent(type="text", text=f"获取README失败: {str(e)}")]
             
+            elif name == "list_commits":
+                try:
+                    result = await client.list_commits(**arguments)
+                    return [TextContent(
+                        type="text",
+                        text="| 提交SHA | 提交信息 | 作者和日期 |\n| --- | --- | --- |\n" + 
+                             "".join([f"| {commit.get('sha', '')[:7]} | {commit.get('commit', {}).get('message', '')[:50].replace('|', '\\|')} | {commit.get('commit', {}).get('author', {}).get('name', '')} 在 {commit.get('commit', {}).get('author', {}).get('date', '')[:10]} |\n" 
+                                     for commit in result])
+                    )]
+                except Exception as e:
+                    return [TextContent(type="text", text=f"获取提交记录失败: {str(e)}")]
+            
+            elif name == "get_commit":
+                try:
+                    result = await client.get_commit(**arguments)
+                    
+                    # 提取提交文件信息
+                    files_info = ""
+                    if "files" in result and result["files"]:
+                        files_info = "\n### 更改文件:\n"
+                        for file in result["files"]:
+                            files_info += f"- {file.get('filename', '')}: +{file.get('additions', 0)} -{file.get('deletions', 0)}\n"
+                    
+                    return [TextContent(type="text", text=f"""
+## 提交详情
+
+- 提交SHA: {result.get('sha', '')}
+- 提交信息: {result.get('commit', {}).get('message', '')}
+- 作者: {result.get('commit', {}).get('author', {}).get('name', '')}
+- 日期: {result.get('commit', {}).get('author', {}).get('date', '')}
+- 提交URL: {result.get('html_url', '')}
+{files_info}
+""")]
+                except Exception as e:
+                    return [TextContent(type="text", text=f"获取提交详情失败: {str(e)}")]
+            
             else:
                 return [TextContent(type="text", text=f"未知工具: {name}")]
                 
@@ -664,11 +729,14 @@ async def serve() -> None:
 4. **搜索GitHub** - 使用github_search工具搜索存储库、代码、问题或用户
 5. **列出分支** - 获取存储库的所有分支
 6. **获取README** - 获取存储库的README文件
+7. **列出提交** - 获取存储库的提交历史记录
+8. **获取提交详情** - 查看特定提交的详细信息
 
 ## 使用提示:
 
 - 搜索时可以使用GitHub的高级搜索语法，如`language:python stars:>100`
 - 在获取文件内容时，如果文件过大，可能只会返回部分内容
+- 查看提交历史时可以指定分支名或路径过滤
                 """,
                 arguments=[]
             )
