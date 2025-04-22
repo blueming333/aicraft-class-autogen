@@ -21,8 +21,11 @@ if not os.environ.get("OPENAI_API_KEY"):
     print("警告: 未找到OPENAI_API_KEY环境变量。请在.env文件中设置此变量。")
 
 # 设置GitHub API密钥，如果有的话
-if not os.environ.get("GITHUB_TOKEN"):
+github_token = os.environ.get("GITHUB_TOKEN")
+if not github_token:
     print("警告: 未找到GITHUB_TOKEN环境变量。某些GitHub API功能可能受限。")
+else:
+    print(f"成功加载GitHub令牌: {github_token[:4]}...{github_token[-4:]}")
 
 # 定义LLM
 model_client = OpenAIChatCompletionClient(
@@ -50,8 +53,14 @@ async def main() -> None:
     
     print(f"使用GitHub MCP服务器路径: {mcp_server_path}")
     
-    # 创建MCP服务器参数
-    github_mcp_server = StdioServerParams(command="python", args=[str(mcp_server_path)])
+    # 创建MCP服务器参数，并传递环境变量
+    env = os.environ.copy()
+    # 确保GITHUB_TOKEN环境变量被正确传递给子进程
+    github_mcp_server = StdioServerParams(
+        command="python", 
+        args=[str(mcp_server_path)],
+        env=env  # 传递包含GITHUB_TOKEN的环境变量
+    )
     
     # 获取MCP工具
     try:
@@ -65,7 +74,21 @@ async def main() -> None:
     agent = AssistantAgent(
         name="github_agent",
         model_client=model_client,
-        system_message="你是一个专门帮助用户查询和处理GitHub信息的AI助手。你可以搜索存储库、获取文件内容、查看代码等。记住任务完成后回复'AiCraft结束'。",
+        system_message="""你是一个专门帮助用户查询和处理GitHub信息的AI助手。你可以搜索存储库、获取文件内容、查看代码等。
+
+重要提示：使用github_search工具时，需要正确构造search_params参数，例如：
+{
+  "search_params": {
+    "query": "MCP server fetch",
+    "type": "code",
+    "per_page": 5,
+    "page": 1
+  }
+}
+
+确保直接提供query字段，而不是使用q或其他字段名。
+
+记住任务完成后回复'AiCraft结束'。""",
         model_client_stream=True,
         tools=tools,
         reflect_on_tool_use=True
@@ -84,10 +107,10 @@ async def main() -> None:
     # 运行team，下面是几个不同的示例任务，可以取消注释来测试不同功能
     
     # 1. 查询存储库信息
-    task = "获取'https://github.com/blueming333/aicraft-class-autogen.git'存储库的的今日最新5次提交记录"
+    # task = "获取'https://github.com/blueming333/aicraft-class-autogen.git'存储库的的今日最新5次提交记录"
     
     # 2. 搜索特定代码
-    # task = "搜索GitHub上与'MCP server fetch'相关的代码，并简要描述几个最相关的结果"
+    task = "搜索GitHub上与'MCP server fetch'相关的代码，并简要描述几个最相关的结果"
     
     # 3. 查看特定文件内容
     # task = "获取microsoft/autogen存储库中README.md文件的内容并总结主要功能"

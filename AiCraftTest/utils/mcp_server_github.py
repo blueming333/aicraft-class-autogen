@@ -150,6 +150,8 @@ class SearchParams(BaseModel):
     type: SearchType = SearchType.CODE
     per_page: int = Field(default=MAX_RESULTS, le=100)
     page: int = 1
+    sort: Optional[str] = None
+    order: Optional[str] = None
 
 
 class GitHubClient:
@@ -287,6 +289,15 @@ class GitHubClient:
             "per_page": search_params.per_page,
             "page": search_params.page,
         }
+        
+        # 添加sort参数（如果存在）
+        if hasattr(search_params, 'sort') and search_params.sort:
+            params['sort'] = search_params.sort
+        
+        # 添加order参数（如果存在）
+        if hasattr(search_params, 'order') and search_params.order:
+            params['order'] = search_params.order
+            
         return await self._make_request(endpoint, params=params)
     
     async def list_branches(self, owner: str, repo: str) -> List[Dict]:
@@ -561,16 +572,24 @@ async def serve() -> None:
             ),
             Tool(
                 name="github_search",
-                description="搜索GitHub内容",
+                description="搜索GitHub内容，支持代码、仓库、问题和用户搜索",
                 inputSchema={
                     "type": "object",
                     "properties": {
                         "search_params": {
                             "type": "object",
-                            "description": "搜索参数"
-                        }
-                    },
-                    "required": ["search_params"]
+                            "description": "搜索参数，可包含query、type、per_page和page字段",
+                            "properties": {
+                                "query": {"type": "string", "description": "搜索查询字符串"},
+                                "type": {"type": "string", "enum": ["repositories", "code", "issues", "users"], "description": "搜索类型：repositories(仓库)、code(代码)、issues(问题)或users(用户)"},
+                                "per_page": {"type": "integer", "description": "每页结果数量，最大100"},
+                                "page": {"type": "integer", "description": "页码，从1开始"}
+                            },
+                            "required": ["query"]
+                        },
+                        "query": {"type": "string", "description": "搜索查询字符串(也可直接在此处指定而非search_params中)"},
+                        "type": {"type": "string", "enum": ["repositories", "code", "issues", "users"], "description": "搜索类型：repositories(仓库)、code(代码)、issues(问题)或users(用户)"}
+                    }
                 }
             ),
             Tool(
@@ -675,7 +694,35 @@ async def serve() -> None:
             
             elif name == "github_search":
                 try:
-                    search_params = SearchParams(**arguments.get("search_params", {}))
+                    # 获取搜索参数，兼容不同的传入格式
+                    search_params_data = arguments
+                    
+                    # 检查是否为嵌套在search_params中的情况
+                    if "search_params" in arguments:
+                        search_params_data = arguments.get("search_params", {})
+                    
+                    # 确保存在query字段
+                    if "query" not in search_params_data and "q" in search_params_data:
+                        # 兼容使用q作为查询参数
+                        search_params_data["query"] = search_params_data.pop("q")
+                    
+                    # 如果没有type字段，添加默认值
+                    if "type" not in search_params_data:
+                        search_params_data["type"] = "code"
+                    
+                    # 处理命名差异：perPage -> per_page
+                    if "perPage" in search_params_data and "per_page" not in search_params_data:
+                        search_params_data["per_page"] = search_params_data.pop("perPage")
+                    
+                    # 添加sort参数处理
+                    if "sort" in arguments and "sort" not in search_params_data:
+                        search_params_data["sort"] = arguments["sort"]
+                    
+                    # 添加order参数处理
+                    if "order" in arguments and "order" not in search_params_data:
+                        search_params_data["order"] = arguments["order"]
+                    
+                    search_params = SearchParams(**search_params_data)
                     result = await client.search(search_params)
                     return [TextContent(type="text", text=f"""
 ## 搜索结果
@@ -788,6 +835,62 @@ async def serve() -> None:
 - 搜索时可以使用GitHub的高级搜索语法，如`language:python stars:>100`
 - 在获取文件内容时，如果文件过大，可能只会返回部分内容
 - 查看提交历史时可以指定分支名或路径过滤
+                """,
+                arguments=[]
+            ),
+            Prompt(
+                name="github_search_prompt",
+                description="""
+# GitHub搜索工具使用指南
+
+使用`github_search`工具可以搜索GitHub上的代码、存储库、问题或用户。
+
+## 使用方法
+
+可以通过以下两种方式之一提供搜索参数：
+
+### 方式1: 使用search_params对象（推荐）
+
+```json
+{
+  "search_params": {
+    "query": "搜索关键词 language:python",
+    "type": "code",
+    "per_page": 5,
+    "page": 1
+  }
+}
+```
+
+### 方式2: 直接提供参数
+
+```json
+{
+  "query": "搜索关键词 language:python",
+  "type": "code"
+}
+```
+
+## 参数说明
+
+- **query**: 搜索查询字符串，支持GitHub高级搜索语法
+- **type**: 搜索类型，可选值:
+  - `repositories`: 搜索存储库
+  - `code`: 搜索代码（默认）
+  - `issues`: 搜索问题
+  - `users`: 搜索用户
+- **per_page**: 每页结果数量（默认5，最大100）
+- **page**: 页码，从1开始
+
+## 搜索语法示例
+
+- `python websocket`: 搜索包含"python"和"websocket"的内容
+- `"hello world" language:javascript`: 搜索JavaScript代码中包含"hello world"的内容
+- `stars:>1000 language:python`: 搜索超过1000颗星的Python项目
+- `size:<1000 extension:js`: 搜索小于1000字节的JavaScript文件
+- `org:microsoft language:typescript`: 搜索Microsoft组织下的TypeScript代码
+
+更多高级语法请参考GitHub搜索文档。
                 """,
                 arguments=[]
             )
