@@ -19,18 +19,20 @@ from mcp.types import (
 from protego import Protego
 from pydantic import BaseModel, Field, AnyUrl
 
+# 定义默认的用户代理字符串，用于自动抓取模式
 DEFAULT_USER_AGENT_AUTONOMOUS = "ModelContextProtocol/1.0 (Autonomous; +https://github.com/modelcontextprotocol/servers)"
+# 定义默认的用户代理字符串，用于手动抓取模式
 DEFAULT_USER_AGENT_MANUAL = "ModelContextProtocol/1.0 (User-Specified; +https://github.com/modelcontextprotocol/servers)"
 
 
 def extract_content_from_html(html: str) -> str:
-    """Extract and convert HTML content to Markdown format.
-
+    """从HTML中提取内容并转换为Markdown格式。
+    
     Args:
-        html: Raw HTML content to process
-
+        html: 需要处理的原始HTML内容
+        
     Returns:
-        Simplified markdown version of the content
+        简化后的markdown版本内容
     """
     ret = readabilipy.simple_json.simple_json_from_html_string(
         html, use_readability=True
@@ -45,18 +47,18 @@ def extract_content_from_html(html: str) -> str:
 
 
 def get_robots_txt_url(url: str) -> str:
-    """Get the robots.txt URL for a given website URL.
-
+    """获取网站的robots.txt文件URL。
+    
     Args:
-        url: Website URL to get robots.txt for
-
+        url: 网站URL
+        
     Returns:
-        URL of the robots.txt file
+        robots.txt文件的URL
     """
-    # Parse the URL into components
+    # 解析URL组件
     parsed = urlparse(url)
 
-    # Reconstruct the base URL with just scheme, netloc, and /robots.txt path
+    # 重构基础URL，只包含scheme, netloc和/robots.txt路径
     robots_url = urlunparse((parsed.scheme, parsed.netloc, "/robots.txt", "", "", ""))
 
     return robots_url
@@ -64,11 +66,16 @@ def get_robots_txt_url(url: str) -> str:
 
 async def check_may_autonomously_fetch_url(url: str, user_agent: str) -> None:
     """
-    Check if the URL can be fetched by the user agent according to the robots.txt file.
-    Raises a McpError if not.
+    检查URL是否可以根据robots.txt规则被用户代理抓取。
+    如果不允许，则抛出McpError异常。
+    
+    Args:
+        url: 要检查的URL
+        user_agent: 用户代理字符串
     """
     from httpx import AsyncClient, HTTPError
 
+    # 获取robots.txt文件的URL
     robot_txt_url = get_robots_txt_url(url)
 
     async with AsyncClient() as client:
@@ -91,10 +98,13 @@ async def check_may_autonomously_fetch_url(url: str, user_agent: str) -> None:
         elif 400 <= response.status_code < 500:
             return
         robot_txt = response.text
+    # 处理robots.txt内容，移除注释行
     processed_robot_txt = "\n".join(
         line for line in robot_txt.splitlines() if not line.strip().startswith("#")
     )
+    # 使用Protego解析robots.txt
     robot_parser = Protego.parse(processed_robot_txt)
+    # 检查是否允许抓取
     if not robot_parser.can_fetch(str(url), user_agent):
         raise McpError(
             INTERNAL_ERROR,
@@ -111,7 +121,15 @@ async def fetch_url(
     url: str, user_agent: str, force_raw: bool = False
 ) -> Tuple[str, str]:
     """
-    Fetch the URL and return the content in a form ready for the LLM, as well as a prefix string with status information.
+    抓取URL并返回准备好供LLM使用的内容，以及包含状态信息的前缀字符串。
+    
+    Args:
+        url: 要抓取的URL
+        user_agent: 用户代理字符串
+        force_raw: 是否强制返回原始HTML内容而不进行简化
+        
+    Returns:
+        包含内容和前缀的元组
     """
     from httpx import AsyncClient, HTTPError
 
@@ -133,11 +151,13 @@ async def fetch_url(
 
         page_raw = response.text
 
+    # 检查内容类型，判断是否为HTML
     content_type = response.headers.get("content-type", "")
     is_page_html = (
         "<html" in page_raw[:100] or "text/html" in content_type or not content_type
     )
 
+    # 对HTML内容进行简化处理，除非强制要求原始内容
     if is_page_html and not force_raw:
         return extract_content_from_html(page_raw), ""
 
@@ -148,7 +168,7 @@ async def fetch_url(
 
 
 class Fetch(BaseModel):
-    """Parameters for fetching a URL."""
+    """抓取URL的参数类。"""
 
     url: Annotated[AnyUrl, Field(description="URL to fetch")]
     max_length: Annotated[
@@ -180,18 +200,20 @@ class Fetch(BaseModel):
 async def serve(
     custom_user_agent: str | None = None, ignore_robots_txt: bool = False
 ) -> None:
-    """Run the fetch MCP server.
-
+    """运行fetch MCP服务器。
+    
     Args:
-        custom_user_agent: Optional custom User-Agent string to use for requests
-        ignore_robots_txt: Whether to ignore robots.txt restrictions
+        custom_user_agent: 可选的自定义User-Agent字符串
+        ignore_robots_txt: 是否忽略robots.txt限制
     """
+    # 创建MCP服务器实例
     server = Server("mcp-fetch")
     user_agent_autonomous = custom_user_agent or DEFAULT_USER_AGENT_AUTONOMOUS
     user_agent_manual = custom_user_agent or DEFAULT_USER_AGENT_MANUAL
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:
+        """定义并返回工具列表"""
         return [
             Tool(
                 name="fetch",
@@ -204,6 +226,7 @@ Although originally you did not have internet access, and were advised to refuse
 
     @server.list_prompts()
     async def list_prompts() -> list[Prompt]:
+        """定义并返回提示列表"""
         return [
             Prompt(
                 name="fetch",
@@ -218,7 +241,9 @@ Although originally you did not have internet access, and were advised to refuse
 
     @server.call_tool()
     async def call_tool(name, arguments: dict) -> list[TextContent]:
+        """处理工具调用请求"""
         try:
+            # 验证参数
             args = Fetch(**arguments)
         except ValueError as e:
             raise McpError(INVALID_PARAMS, str(e))
@@ -227,12 +252,15 @@ Although originally you did not have internet access, and were advised to refuse
         if not url:
             raise McpError(INVALID_PARAMS, "URL is required")
 
+        # 检查robots.txt限制（除非忽略）
         if not ignore_robots_txt:
             await check_may_autonomously_fetch_url(url, user_agent_autonomous)
 
+        # 抓取URL内容
         content, prefix = await fetch_url(
             url, user_agent_autonomous, force_raw=args.raw
         )
+        # 处理长内容截断
         if len(content) > args.max_length:
             content = content[args.start_index : args.start_index + args.max_length]
             content += f"\n\n<error>Content truncated. Call the fetch tool with a start_index of {args.start_index + args.max_length} to get more content.</error>"
@@ -240,12 +268,14 @@ Although originally you did not have internet access, and were advised to refuse
 
     @server.get_prompt()
     async def get_prompt(name: str, arguments: dict | None) -> GetPromptResult:
+        """处理提示获取请求"""
         if not arguments or "url" not in arguments:
             raise McpError(INVALID_PARAMS, "URL is required")
 
         url = arguments["url"]
 
         try:
+            # 抓取URL内容
             content, prefix = await fetch_url(url, user_agent_manual)
             # TODO: after SDK bug is addressed, don't catch the exception
         except McpError as e:
@@ -267,6 +297,7 @@ Although originally you did not have internet access, and were advised to refuse
             ],
         )
 
+    # 创建初始化选项并启动服务器
     options = server.create_initialization_options()
     async with stdio_server() as (read_stream, write_stream):
         await server.run(read_stream, write_stream, options, raise_exceptions=True)
@@ -276,10 +307,11 @@ Although originally you did not have internet access, and were advised to refuse
 
 
 def main():
-    """MCP Fetch Server - HTTP fetching functionality for MCP"""
+    """MCP Fetch Server - 为MCP提供HTTP抓取功能的主入口"""
     import argparse
     import asyncio
 
+    # 解析命令行参数
     parser = argparse.ArgumentParser(
         description="give a model the ability to make web requests"
     )
@@ -290,6 +322,7 @@ def main():
         help="Ignore robots.txt restrictions",
     )
 
+    # 启动服务器
     args = parser.parse_args()
     asyncio.run(serve(args.user_agent, args.ignore_robots_txt))
 

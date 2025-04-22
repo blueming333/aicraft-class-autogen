@@ -6,29 +6,49 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.ui import Console
 from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
-
+from autogen_core.models import ModelFamily
+import pathlib
 
 
 os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-os.environ["OPENAI_API_KEY"] = "sk-nq393KS4lvCCNjscfFJDNjkwOiTc12tICQU4QZi89a6aGG0F"
+os.environ["OPENAI_API_KEY"] = "sk-bbac7524061c4acfb485f953e40212174f66"
 
 
 # 定义LLM
 model_client = OpenAIChatCompletionClient(
-    model="gpt-4o-mini-2024-07-18"
+    model="qwen-plus",
+    model_info={
+        "function_calling": True,
+        "json_output": False,
+        "vision": False,
+        "stream": True,
+        "family": ModelFamily.R1,
+    },
+    max_tokens=4096,
 )
 
 
 async def main() -> None:
-
-    fetch_mcp_server = StdioServerParams(command="python", args=["utils/mcp_server_fetch.py"])
+    # 获取当前脚本的绝对路径
+    current_file = pathlib.Path(__file__).resolve()
+    # 获取utils目录中mcp_server_fetch.py的绝对路径
+    mcp_server_path = current_file.parent / "utils" / "mcp_server_fetch.py"
+    
+    # 确保路径存在
+    if not mcp_server_path.exists():
+        raise FileNotFoundError(f"MCP服务器文件未找到: {mcp_server_path}")
+    
+    print(f"使用MCP服务器路径: {mcp_server_path}")
+    
+    # 使用绝对路径创建MCP服务器参数
+    fetch_mcp_server = StdioServerParams(command="python", args=[str(mcp_server_path)])
     tools = await mcp_server_tools(fetch_mcp_server)
 
     # 定义Agent
     agent = AssistantAgent(
         name="agent",
         model_client=model_client,
-        system_message="你是一个乐于助人的AI智能助手。记住问题完成后回复“AiCraft结束”。",
+        system_message="你是一个乐于助人的AI智能助手。记住任务完成后回复'AiCraft结束'。",
         model_client_stream=True,
         tools=tools,
         reflect_on_tool_use=True
@@ -48,7 +68,6 @@ async def main() -> None:
     # # 2、运行team并使用流式输出,自己处理消息并将其流到前端
     # async for message in reflection_team.run_stream(task="概述 https://en.wikipedia.org/wiki/Seattle 的内容"):
     #     print(message)
-
 
 
 if __name__ == '__main__':
