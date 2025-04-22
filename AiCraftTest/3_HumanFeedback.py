@@ -6,6 +6,7 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.ui import Console
 from dotenv import load_dotenv
+from autogen_agentchat.base import Handoff
 from autogen_core.models import ModelFamily
 
 # 加载.env文件中的环境变量
@@ -52,7 +53,8 @@ async def main() -> None:
     weather_agent = AssistantAgent(
         name="weather_agent",
         model_client=model_client,
-        description="一个和用户交互的智能体。"
+        description="一个和用户交互的智能体。",
+        handoffs=[Handoff(target="user", message="移交给用户。")],        
     )
 
     # 定义Agent - 使用人类用户真实输入

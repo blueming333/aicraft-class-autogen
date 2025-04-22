@@ -6,15 +6,35 @@ from autogen_agentchat.conditions import TextMentionTermination, HandoffTerminat
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.ui import Console
+from dotenv import load_dotenv
+from autogen_core.models import ModelFamily
+# 加载.env文件中的环境变量
+load_dotenv()
 
+# 设置OpenAI API密钥和基础URL
+os.environ.setdefault("OPENAI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+# 使用.env文件中的API密钥，如果不存在则使用默认值
+if not os.environ.get("OPENAI_API_KEY"):
+    print("警告: 未找到OPENAI_API_KEY环境变量。请在.env文件中设置此变量。")
 
-os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-os.environ["OPENAI_API_KEY"] = "sk-d6e9066e7a834a9e82e57177f1a2385c"
+# 设置GitHub API密钥，如果有的话
+github_token = os.environ.get("GITHUB_TOKEN")
+if not github_token:
+    print("警告: 未找到GITHUB_TOKEN环境变量。某些GitHub API功能可能受限。")
+else:
+    print(f"成功加载GitHub令牌: {github_token[:4]}...{github_token[-4:]}")
 
 
 # 定义LLM
 model_client = OpenAIChatCompletionClient(
-    model="deepseek-v3"
+    model="qwen-plus",
+     model_info={
+        "function_calling": True,
+        "json_output": False,
+        "vision": False,
+        "stream": True,
+        "family": ModelFamily.R1,
+    },
 )
 
 
