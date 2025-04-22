@@ -11,7 +11,7 @@ import pathlib
 
 
 os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-os.environ["OPENAI_API_KEY"] = "sk-bbac7524061c4acfb485f953e40212174f66"
+os.environ["OPENAI_API_KEY"] = "sk-bbac7524061c4acfb485f953e4074f66"
 
 
 # 定义LLM
