@@ -1,6 +1,7 @@
 import os
 import asyncio
 import pathlib
+from dotenv import load_dotenv
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
@@ -10,12 +11,18 @@ from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
 from autogen_core.models import ModelFamily
 
 
-# 设置OpenAI API密钥和基础URL，请替换为你的实际密钥
-os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-os.environ["OPENAI_API_KEY"] = "你的API密钥"  # 使用占位符替换实际密钥
+# 加载.env文件中的环境变量
+load_dotenv()
+
+# 设置OpenAI API密钥和基础URL
+os.environ.setdefault("OPENAI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+# 使用.env文件中的API密钥，如果不存在则使用默认值
+if not os.environ.get("OPENAI_API_KEY"):
+    print("警告: 未找到OPENAI_API_KEY环境变量。请在.env文件中设置此变量。")
 
 # 设置GitHub API密钥，如果有的话
-os.environ["GITHUB_TOKEN"] = "你的GitHub令牌"  # 使用占位符替换实际令牌
+if not os.environ.get("GITHUB_TOKEN"):
+    print("警告: 未找到GITHUB_TOKEN环境变量。某些GitHub API功能可能受限。")
 
 # 定义LLM
 model_client = OpenAIChatCompletionClient(
