@@ -1,0 +1,98 @@
+import os
+import asyncio
+import pathlib
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.conditions import TextMentionTermination
+from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+from autogen_agentchat.ui import Console
+from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
+from autogen_core.models import ModelFamily
+
+
+# 设置OpenAI API密钥和基础URL，请替换为你的实际密钥
+os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+os.environ["OPENAI_API_KEY"] = "你的API密钥"  # 使用占位符替换实际密钥
+
+# 设置GitHub API密钥，如果有的话
+os.environ["GITHUB_TOKEN"] = "你的GitHub令牌"  # 使用占位符替换实际令牌
+
+# 定义LLM
+model_client = OpenAIChatCompletionClient(
+    model="qwen-plus",  # 使用阿里千问，支持函数调用
+    model_info={
+        "function_calling": True,
+        "json_output": False,
+        "vision": False,
+        "stream": True,
+        "family": ModelFamily.R1,
+    },
+    max_tokens=4096,
+)
+
+
+async def main() -> None:
+    # 获取当前脚本的绝对路径
+    current_file = pathlib.Path(__file__).resolve()
+    # 获取utils目录中mcp_server_github.py的绝对路径
+    mcp_server_path = current_file.parent / "utils" / "mcp_server_github.py"
+    
+    # 确保路径存在
+    if not mcp_server_path.exists():
+        raise FileNotFoundError(f"GitHub MCP服务器文件未找到: {mcp_server_path}")
+    
+    print(f"使用GitHub MCP服务器路径: {mcp_server_path}")
+    
+    # 创建MCP服务器参数
+    github_mcp_server = StdioServerParams(command="python", args=[str(mcp_server_path)])
+    
+    # 获取MCP工具
+    try:
+        tools = await mcp_server_tools(github_mcp_server)
+        print(f"成功加载GitHub MCP工具: {len(tools)} 个工具可用")
+    except Exception as e:
+        print(f"加载GitHub MCP工具失败: {e}")
+        return
+
+    # 定义Agent
+    agent = AssistantAgent(
+        name="github_agent",
+        model_client=model_client,
+        system_message="你是一个专门帮助用户查询和处理GitHub信息的AI助手。你可以搜索存储库、获取文件内容、查看代码等。记住任务完成后回复'AiCraft结束'。",
+        model_client_stream=True,
+        tools=tools,
+        reflect_on_tool_use=True
+    )
+
+    # 定义终止条件，如果提到特定文本则终止对话
+    text_termination = TextMentionTermination("AiCraft结束")
+
+    # 定义Team，类型选择为RoundRobinGroupChat
+    github_team = RoundRobinGroupChat(
+        participants=[agent], 
+        termination_condition=text_termination, 
+        max_turns=None
+    )
+
+    # 运行team，下面是几个不同的示例任务，可以取消注释来测试不同功能
+    
+    # 1. 查询存储库信息
+    task = "获取并概述'https://github.com/github/github-mcp-server'存储库的基本信息，包括主要功能、星标数和最新3次提交的内容"
+    
+    # 2. 搜索特定代码
+    # task = "搜索GitHub上与'MCP server fetch'相关的代码，并简要描述几个最相关的结果"
+    
+    # 3. 查看特定文件内容
+    # task = "获取microsoft/autogen存储库中README.md文件的内容并总结主要功能"
+    
+    # 4. 对比两个分支
+    # task = "列出microsoft/autogen存储库的主要分支，并解释它们的用途"
+
+    print(f"执行任务: {task}")
+    stream = github_team.run_stream(task=task)
+    await Console(stream)
+
+
+if __name__ == '__main__':
+    # 运行main
+    asyncio.run(main()) 
