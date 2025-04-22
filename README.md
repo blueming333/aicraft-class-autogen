@@ -62,22 +62,13 @@ AutoGen v0.4的应用接口采用分层架构设计，存在多套软件接口�
    # 创建虚拟环境并激活，使用python=3.12
    uv venv --python 3.12
    source .venv/bin/activate  # Unix/macOS 系统
-    # Windows 系统使用：
-    # .venv\Scripts\activate
+   # Windows 系统使用：
+   # .venv\Scripts\activate
+   
+   # 或使用uv安装（速度更快）
+   uv pip install -r requirements.txt
    ```
 
-3. 安装AutoGen及相关依赖
-   ```bash
-   # 使用pip安装
-   pip install -U "autogen-agentchat"
-   pip install "autogen-ext[openai]"
-   pip install asyncio==3.4.3
-   
-   # 或者使用uv安装（速度更快）
-   uv pip install -U "autogen-agentchat"
-   uv pip install "autogen-ext[openai]"
-   uv pip install asyncio==3.4.3
-   ```
 
 ### 大模型配置
 本项目支持多种大模型接入方式：

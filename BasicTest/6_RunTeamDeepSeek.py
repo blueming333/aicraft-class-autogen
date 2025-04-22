@@ -17,7 +17,7 @@ import inspect
 
 
 # os.environ["OPENAI_BASE_URL"] = "https://api.deepseek.com"
-# os.environ["OPENAI_API_KEY"] = "sk-aec818bee9e24c28827bbb84ea4f2448"
+# os.environ["OPENAI_API_KEY"] = "sk-"
 os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 os.environ["OPENAI_API_KEY"] = "sk-d6e9066e7a834a9e82e57177f1a2385c"
 

@@ -1,0 +1,34 @@
+# AutoGen核心组件
+autogen-core>=0.5.3
+autogen-agentchat>=0.5.3
+autogen-ext[openai]>=0.5.3
+
+# 异步支持
+asyncio==3.4.3
+
+# MCP服务器依赖
+mcp-server-fetch
+protego
+markdownify
+readabilipy
+json-schema-to-pydantic
+
+# HTTP工具支持
+httpx
+
+# Web API支持
+fastapi
+uvicorn
+pydantic
+
+# Ollama集成 (用于本地部署模型)
+# 注意：Ollama本身需要单独安装，这只是Python客户端
+
+# 其他实用工具
+diskcache  # 用于缓存系统
+
+# 可选依赖
+# graphrag==1.2.0  # 用于图形RAG集成
+# langchain_experimental  # 用于LangChain工具集成
+# duckduckgo-search  # 用于网络搜索
+# langchain-community  # 用于LangChain社区工具 
