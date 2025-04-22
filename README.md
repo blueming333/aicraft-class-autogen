@@ -374,7 +374,7 @@ Magentic-One的工作基于一个多Agent架构，其中的首席协调者(Orche
 **在命令行终端中使用:**                       
 首先安装依赖 pip install -U magentic-one-cli                                     
 直接运行 m1 "我今天的心情非常不错" 进行问答                                         
-export OPENAI_BASE_URL="https://yunwu.ai/v1"                                
+export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"                                
 export OPENAI_API_KEY="sk-COUbOl2EH7IYaz6SqFADUp7Ie4WA4rzFvNr3PzIAZjVyHQcJ"                                        
 **在代码中集成使用:**                                                
 相关测试代码在MagenticOneCli文件夹下的1_BasicTest.py                                     

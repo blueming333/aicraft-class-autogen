@@ -12,7 +12,7 @@
         "component_type": "model",
         "model": "gpt-4o-mini-2024-07-18",
         "model_type": "OpenAIChatCompletionClient",
-        "base_url": "https://yunwu.ai/v1",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
         "api_key": "sk-CWmxGeg5sm8NexAk7VyUIDHafWXHCgOJuyDyiIBjbEAaSu6p"
       },
       "tools": []

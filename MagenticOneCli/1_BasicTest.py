@@ -8,7 +8,7 @@ from autogen_agentchat.ui import Console
 
 
 
-os.environ["OPENAI_BASE_URL"] = "https://yunwu.ai/v1"
+os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 os.environ["OPENAI_API_KEY"] = "sk-COUbOl2EH7IYaz6SqFADUp7Ie4WA4rzFvNr3PzIAZjVyHQcJ"
 
 

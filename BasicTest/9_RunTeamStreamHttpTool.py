@@ -10,7 +10,7 @@ from autogen_ext.tools.http import HttpTool
 
 
 
-os.environ["OPENAI_BASE_URL"] = "https://yunwu.ai/v1"
+os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 os.environ["OPENAI_API_KEY"] = "sk-nq393KS4lvCCNjscfFJDNjkwOiTc12tICQU4QZi89a6aGG0F"
 
 

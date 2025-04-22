@@ -13,7 +13,7 @@ from diskcache import Cache
 
 
 
-os.environ["OPENAI_BASE_URL"] = "https://yunwu.ai/v1"
+os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 os.environ["OPENAI_API_KEY"] = "sk-Rj3IWhZU9DZjoyy8AQ2Q3Fo82qlKApSFtYsu40EOtH9GCytV"
 
 

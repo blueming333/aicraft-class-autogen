@@ -11,7 +11,7 @@ from autogen_ext.tools.langchain import LangChainToolAdapter
 
 
 
-os.environ["OPENAI_BASE_URL"] = "https://yunwu.ai/v1"
+os.environ["OPENAI_BASE_URL"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 os.environ["OPENAI_API_KEY"] = "sk-ImgTvNymbf3cV0mMOyuJlL1SsCj60Gmi4qcrAmG1yXodtqeS"
 
 
