@@ -30,12 +30,12 @@ async def main() -> None:
     critic_agent = AssistantAgent(
         name="critic",
         model_client=model_client,
-        system_message="提供建设性反馈意见。记住只有当你的反馈意见得到处理后再允许回复 “南哥AGI研习社”。"
+        system_message="提供建设性反馈意见。记住只有当你的反馈意见得到处理后再允许回复 “AiCraft结束”。"
 
     )
 
     # 定义终止条件  如果提到特定文本则终止对话
-    text_termination = TextMentionTermination("南哥AGI研习社")
+    text_termination = TextMentionTermination("AiCraft结束")
     # 定义终止条件，在5条信息后停止任务
     max_message_termination = MaxMessageTermination(5)
     # 使用`|` 运算符组合终止条件，在满足任一条件时停止任务

@@ -28,7 +28,7 @@ async def main() -> None:
 
 
     # 定义终止条件  如果提到特定文本则终止对话
-    text_termination = TextMentionTermination("南哥AGI研习社")
+    text_termination = TextMentionTermination("AiCraft结束")
     # 定义终止条件，在5条信息后停止任务
     max_message_termination = MaxMessageTermination(5)
     # 使用`|` 运算符组合终止条件，在满足任一条件时停止任务

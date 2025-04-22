@@ -29,12 +29,12 @@ async def main() -> None:
             model="gpt-4o-mini-2024-07-18"
         ),
         description="一个通过使用工具为用户提供帮助的智能体。使用`df`变量访问数据集。",
-        system_message="你是一个乐于助人的AI智能助手。擅长使用工具解决任务，使用`df`变量访问数据集。任务完成后，回复南哥AGI研习社。",
+        system_message="你是一个乐于助人的AI智能助手。擅长使用工具解决任务，使用`df`变量访问数据集。任务完成后，回复AiCraft结束。",
         tools=[tool],
     )
 
     # 定义终止条件  如果提到特定文本则终止对话
-    termination = TextMentionTermination("南哥AGI研习社")
+    termination = TextMentionTermination("AiCraft结束")
 
     # 定义Team Team的类型选择为RoundRobinGroupChat
     agent_team = RoundRobinGroupChat(participants=[agent], termination_condition=termination, max_turns=None)

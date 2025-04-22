@@ -37,11 +37,11 @@ async def main() -> None:
         name="agent",
         model_client=cache_client,
         description="你是一个乐于助人的AI智能助手。",
-        system_message="你是一个乐于助人的AI智能助手。任务完成后，回复南哥AGI研习社"
+        system_message="你是一个乐于助人的AI智能助手。任务完成后，回复AiCraft结束"
     )
 
     # 定义终止条件  如果提到特定文本则终止对话
-    termination = TextMentionTermination("南哥AGI研习社")
+    termination = TextMentionTermination("AiCraft结束")
 
     # 定义Team Team的类型选择为RoundRobinGroupChat
     agent_team = RoundRobinGroupChat(participants=[agent], termination_condition=termination, max_turns=None)

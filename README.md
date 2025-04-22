@@ -59,11 +59,11 @@ AutoGen v0.4的应用接口采用分层架构设计，存在多套软件接口�
    # 或者使用pip安装
    pip install uv
    
-   # 创建虚拟环境并激活
-   uv venv
-   source .venv/bin/activate  # Linux/macOS
-   # 或者在Windows上
-   # .venv\Scripts\activate
+   # 创建虚拟环境并激活，使用python=3.12
+   uv venv --python 3.12
+   source .venv/bin/activate  # Unix/macOS 系统
+    # Windows 系统使用：
+    # .venv\Scripts\activate
    ```
 
 3. 安装AutoGen及相关依赖
