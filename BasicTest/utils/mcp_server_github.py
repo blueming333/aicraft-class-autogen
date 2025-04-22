@@ -393,6 +393,57 @@ class GitHubClient:
         """
         endpoint = f"/repos/{owner}/{repo}/compare/{base}...{head}"
         return await self._make_request(endpoint)
+    
+    async def list_commits(self, owner: str, repo: str, sha: Optional[str] = None, path: Optional[str] = None, page: int = 1, per_page: int = 30) -> List[Dict]:
+        """获取存储库的提交历史
+        
+        Args:
+            owner: 存储库所有者
+            repo: 存储库名称
+            sha: 分支名称、标签或提交SHA（可选）
+            path: 仅包含此文件路径的提交（可选）
+            page: 页码（默认1）
+            per_page: 每页结果数（默认30）
+            
+        Returns:
+            List[Dict]: 提交列表
+        """
+        endpoint = f"/repos/{owner}/{repo}/commits"
+        params = {
+            "page": page,
+            "per_page": min(per_page, 100)
+        }
+        
+        if sha:
+            params["sha"] = sha
+        if path:
+            params["path"] = path
+            
+        return await self._make_request(endpoint, params=params)
+    
+    async def get_commit(self, owner: str, repo: str, sha: str, page: int = 1, per_page: int = 30) -> Dict:
+        """获取特定提交的详细信息
+        
+        Args:
+            owner: 存储库所有者
+            repo: 存储库名称
+            sha: 提交SHA、分支名称或标签名称
+            page: 页码（默认1）
+            per_page: 每页结果数（默认30）
+            
+        Returns:
+            Dict: 提交详情
+        """
+        endpoint = f"/repos/{owner}/{repo}/commits/{sha}"
+        params = {}
+        
+        if page > 1 or per_page != 30:
+            params = {
+                "page": page,
+                "per_page": min(per_page, 100)
+            }
+            
+        return await self._make_request(endpoint, params=params)
 
 
 async def github_api_request(endpoint: str, method: str = "GET", params: dict = None, headers: dict = None, data: dict = None) -> Dict[str, Any]:
