@@ -42,15 +42,42 @@ AutoGen v0.4的应用接口采用分层架构设计，存在多套软件接口�
 
 ## 环境配置
 ### 开发环境搭建
-1. 安装Anaconda和PyCharm
-2. 创建虚拟环境并激活
-3. 安装AutoGen及相关依赖
+1. 使用Conda (推荐)
+   - 安装Anaconda或Miniconda
+   - 创建虚拟环境并激活
+   ```bash
+   conda create -n autogen-env python=3.10
+   conda activate autogen-env
+   ```
 
-```bash
-pip install -U "autogen-agentchat"
-pip install "autogen-ext[openai]"
-pip install asyncio==3.4.3
-```
+2. 使用UV (更快的Python包管理器)
+   - 安装UV: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
+   ```bash
+   # 安装UV
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   
+   # 或者使用pip安装
+   pip install uv
+   
+   # 创建虚拟环境并激活
+   uv venv
+   source .venv/bin/activate  # Linux/macOS
+   # 或者在Windows上
+   # .venv\Scripts\activate
+   ```
+
+3. 安装AutoGen及相关依赖
+   ```bash
+   # 使用pip安装
+   pip install -U "autogen-agentchat"
+   pip install "autogen-ext[openai]"
+   pip install asyncio==3.4.3
+   
+   # 或者使用uv安装（速度更快）
+   uv pip install -U "autogen-agentchat"
+   uv pip install "autogen-ext[openai]"
+   uv pip install asyncio==3.4.3
+   ```
 
 ### 大模型配置
 本项目支持多种大模型接入方式：
@@ -215,13 +242,38 @@ Team运行后可以一直运行下去，在很多情况下需要知道何时停�
 
 
 # 2、前期准备工作
-## 2.1 开发环境搭建:anaconda、pycharm
-anaconda:提供python虚拟环境，官网下载对应系统版本的安装包安装即可                                      
-pycharm:提供集成开发环境，官网下载社区版本安装包安装即可                                               
-**可参考如下视频:**                      
-集成开发环境搭建Anaconda+PyCharm                                                          
-https://www.bilibili.com/video/BV1q9HxeEEtT/?vd_source=30acb5331e4f5739ebbad50f7cc6b949                             
-https://youtu.be/myVgyitFzrA          
+## 2.1 开发环境搭建
+您可以选择以下任一方式创建和管理Python虚拟环境：
+
+1. **Conda环境**：提供跨平台的包和环境管理系统
+   - 从[Anaconda官网](https://www.anaconda.com/download/)下载并安装Anaconda或Miniconda
+   - 创建并激活虚拟环境
+   ```bash
+   conda create -n autogen-env python=3.10
+   conda activate autogen-env
+   ```
+
+2. **UV环境**：更快的Python包管理器和虚拟环境工具
+   - 安装UV: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
+   ```bash
+   # 使用官方安装脚本
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   
+   # 创建虚拟环境
+   uv venv
+   source .venv/bin/activate  # Linux/macOS
+   # Windows: .venv\Scripts\activate
+   ```
+
+3. **标准venv**：Python内置的虚拟环境工具
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/macOS
+   # Windows: venv\Scripts\activate
+   ```
+
+**可参考视频:**
+- 虚拟环境搭建教程: https://youtu.be/myVgyitFzrA
 
 ## 2.2 大模型相关配置
 (1)GPT大模型使用方案(第三方代理方式)                               
@@ -240,26 +292,64 @@ https://github.com/NanGePlus/AutoGenV04Test
 https://gitee.com/NanGePlus/AutoGenV04Test                                                          
 
 ## 3.2 构建项目
-使用pycharm构建一个项目，为项目配置虚拟python环境               
-项目名称：AutoGenV04Test                    
-虚拟环境名称保持与项目名称一致                
+创建项目目录并初始化虚拟环境：
+
+```bash
+# 创建项目目录
+mkdir AutoGenV04Test
+cd AutoGenV04Test
+
+# 使用uv创建虚拟环境（推荐）
+uv venv
+source .venv/bin/activate  # Linux/macOS
+# Windows: .venv\Scripts\activate
+
+# 或使用conda创建虚拟环境
+# conda create -n autogen-env python=3.10
+# conda activate autogen-env
+
+# 或使用标准venv
+# python -m venv venv
+# source venv/bin/activate  # Linux/macOS
+# Windows: venv\Scripts\activate
+```
+
+您可以使用任意代码编辑器（如VS Code、Sublime Text、Vim等）打开此项目目录进行开发。
 
 ## 3.3 将相关代码拷贝到项目工程中           
 直接将下载的文件夹中的文件拷贝到新建的项目目录中               
 
-## 3.4 安装项目依赖          
-命令行终端中执行如下命令安装依赖包                         
-pip install -U "autogen-agentchat"                                                
-pip install "autogen-ext[openai]"                           
-pip install asyncio==3.4.3                       
+## 3.4 安装项目依赖
+您可以使用以下命令安装依赖包：
+
+```bash
+# 使用pip安装（标准方式）
+pip install -U "autogen-agentchat"
+pip install "autogen-ext[openai]"
+pip install asyncio==3.4.3
+
+# 或使用uv安装（速度更快）
+uv pip install -U "autogen-agentchat"
+uv pip install "autogen-ext[openai]"
+uv pip install asyncio==3.4.3
+
+# 或者一次性安装所有依赖（使用uv）
+uv pip install -U "autogen-agentchat" "autogen-ext[openai]" asyncio==3.4.3
+```
 
 # 4、测试
 ## 4.1 AgentChat框架基本功能测试
 相关测试代码在BasicTest文件夹下                    
 
 ## 4.2 AutoGen Studio低代码平台使用
-(1)运行如下命令安装依赖包                                      
-pip install -U autogenstudio                               
+(1)运行如下命令安装依赖包
+```bash
+# 使用pip安装
+pip install -U autogenstudio
+
+# 或使用uv安装
+uv pip install -U autogenstudio
+```
 (2)命令行终端启动服务，运行如下命令                                                         
 autogenstudio ui --port 8081                    
 支持修改相关参数自定义应用程序如下:                   
@@ -371,6 +461,64 @@ https://github.com/NanGePlus/MCPTest
 **(3)AutoGen与HTTP API工具集成**           
 支持远程调用HTTP API工具             
 相关测试代码在BasicTest目录下，运行 python 9_RunTeamStreamHttpTool.py 进行测试      
+
+## AutoGen最新版本更新
+以下是AutoGen框架最新的三个版本的功能更新总结：
+
+### AutoGen v0.5.3（2025年4月17日发布）
+#### 主要更新：
+- **CodeExecutorAgent更新**：现在CodeExecutorAgent可以在同一次调用中生成和执行代码
+- **AssistantAgent改进**：当设置output_content_type时，AssistantAgent现在支持序列化，这要归功于新的内置工具模块autogen_core.utils
+- **Team改进**：增加了可选参数emit_team_events，用于配置团队事件（如SelectorSpeakerEvent）是否通过run_stream发送
+- **MCP改进**：mcp_server_tools工厂现在可以重用共享会话
+- **Console改进**：在控制台中打印消息类型
+- **Bug修复**：
+  - 修复了Azure AI搜索工具客户端生命周期管理问题
+  - 确保思考内容包含在移交上下文中
+
+### AutoGen v0.5.2（2025年4月15日发布）
+#### 主要更新：
+- **SocietyOfMindAgent消息处理改进**
+- **新增模型支持**：添加了Gemini 2.5 Pro预览版
+- **代码清理**：清理了AgentChat和Core中的冗余代码
+- **Docker代码执行**：在执行后删除临时文件
+- **终止条件修复**
+- **更新依赖**：更新了json_schema_to_pydantic版本，放宽了数组项要求
+- **暴露更多Task-Centric Memory参数**
+- **修复**：
+  - 修复Azure AI搜索嵌入问题
+  - 为ChromaDB移除IncludeEnum的修复
+  - 修复数据类的联合类型错误
+
+### AutoGen v0.5.1（2025年4月3日发布）
+#### 主要更新：
+- **AgentChat消息类型重大改进**：
+  - 重要变化：如果不使用自定义Agent或自定义终止条件，不需要更改任何内容
+  - 否则，将类型提示中的AgentEvent更新为BaseAgentEvent，ChatMessage更新为BaseChatMessage
+  - 此变更支持应用程序定义的自定义消息类型
+  - 引入新的消息类型StructureMessage[T]，可用于创建具有BaseModel内容的新消息类型
+
+- **结构化输出增强**：
+  - 模型客户端：使用json_output参数指定Pydantic模型作为结构化输出类型
+  - AssistantAgent：设置output_content_type为结构化输出类型，Agent将自动反思工具调用结果并生成带有输出内容类型的StructuredMessage
+
+- **Azure AI搜索工具**：新增工具允许Agent使用Azure AI搜索执行搜索
+
+- **SelectorGroupChat改进**：
+  - 实现candidate_func参数过滤候选人池
+  - 为selector_func和candidate_func添加异步支持
+
+- **代码执行器改进**：
+  - 为Docker执行器添加取消支持
+  - 将start()和stop()作为CodeExecutor的接口方法
+  - 将代码执行器的默认目录更改为临时目录
+
+- **模型客户端改进**：
+  - 改进关于模型客户端和工具的文档
+  - 在AzureAIChatCompletionClient中添加思考字段支持
+  - 添加思考过程分析，在ModelClientStreamingChunkEvent中添加推理字段以区分思考标记
+  - 为OllamaChatCompletionClient添加思考字段支持和修复LLM控制参数
+  - 模块化Transformer管道和修复Gemini/Anthropic空内容处理
 
 
 
