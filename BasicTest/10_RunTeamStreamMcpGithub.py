@@ -84,7 +84,7 @@ async def main() -> None:
     # 运行team，下面是几个不同的示例任务，可以取消注释来测试不同功能
     
     # 1. 查询存储库信息
-    task = "获取并概述'https://github.com/github/github-mcp-server'存储库的基本信息，包括主要功能、星标数和最新3次提交的内容"
+    task = "获取并概述'https://github.com/blueming333/aicraft-class-autogen.git'存储库的基本信息，包括主要功能、星标数和最新3次提交的内容"
     
     # 2. 搜索特定代码
     # task = "搜索GitHub上与'MCP server fetch'相关的代码，并简要描述几个最相关的结果"
