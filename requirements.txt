@@ -30,6 +30,8 @@ diskcache  # 用于缓存系统
 # 环境变量
 python-dotenv
 
+matplotlib
+
 # 可选依赖
 # graphrag==1.2.0  # 用于图形RAG集成
 # langchain_experimental  # 用于LangChain工具集成
