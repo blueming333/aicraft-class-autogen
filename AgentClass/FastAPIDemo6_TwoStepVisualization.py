@@ -60,7 +60,7 @@ class PlotTools:
     """绘图工具类"""
     
     @staticmethod
-    def create_bar_chart(data: List[float], title: str = "柱状图", labels: List[str] = None) -> Dict:
+    def create_bar_chart(data: List[float], title: str = "Bar Chart", labels: List[str] = None) -> Dict:
         """创建柱状图"""
         try:
             plt.figure(figsize=(10, 6))
@@ -68,12 +68,12 @@ class PlotTools:
             if labels and len(labels) == len(data):
                 x_labels = labels
             else:
-                x_labels = [f"项目{i+1}" for i in range(len(data))]
+                x_labels = [f"Item{i+1}" for i in range(len(data))]
             
             bars = plt.bar(x_labels, data, color='skyblue', alpha=0.8)
             plt.title(title)
-            plt.xlabel("项目")
-            plt.ylabel("数值")
+            plt.xlabel("Items")
+            plt.ylabel("Values")
             
             # 显示数值
             for bar, value in zip(bars, data):
@@ -84,16 +84,16 @@ class PlotTools:
             plt.show()
             
             return {
-                "chart_type": "柱状图",
+                "chart_type": "Bar Chart",
                 "title": title,
                 "data_count": len(data),
-                "status": "图表已生成并显示"
+                "status": "Chart generated and displayed"
             }
         except Exception as e:
-            return {"error": f"柱状图生成错误: {e}"}
+            return {"error": f"Bar chart generation error: {e}"}
     
     @staticmethod
-    def create_line_chart(data: List[float], title: str = "折线图", labels: List[str] = None) -> Dict:
+    def create_line_chart(data: List[float], title: str = "Line Chart", labels: List[str] = None) -> Dict:
         """创建折线图"""
         try:
             plt.figure(figsize=(10, 6))
@@ -106,8 +106,8 @@ class PlotTools:
                 plt.plot(x_values, data, marker='o', linewidth=2, markersize=6)
             
             plt.title(title)
-            plt.xlabel("数据点")
-            plt.ylabel("数值")
+            plt.xlabel("Data Points")
+            plt.ylabel("Values")
             plt.grid(True, alpha=0.3)
             
             # 标注数值
@@ -123,16 +123,16 @@ class PlotTools:
             plt.show()
             
             return {
-                "chart_type": "折线图",
+                "chart_type": "Line Chart",
                 "title": title,
                 "data_count": len(data),
-                "status": "图表已生成并显示"
+                "status": "Chart generated and displayed"
             }
         except Exception as e:
-            return {"error": f"折线图生成错误: {e}"}
+            return {"error": f"Line chart generation error: {e}"}
     
     @staticmethod
-    def create_comparison_chart(datasets: Dict[str, List[float]], title: str = "对比图") -> Dict:
+    def create_comparison_chart(datasets: Dict[str, List[float]], title: str = "Comparison Chart") -> Dict:
         """创建对比图表"""
         try:
             plt.figure(figsize=(12, 8))
@@ -149,23 +149,23 @@ class PlotTools:
                 plt.bar(x_pos + offset, values, bar_width, 
                        label=quarter, color=colors[i % len(colors)], alpha=0.8)
             
-            plt.xlabel('产品')
-            plt.ylabel('销量')
+            plt.xlabel('Products')
+            plt.ylabel('Sales')
             plt.title(title)
-            plt.xticks(x_pos, [f'产品{i+1}' for i in range(len(data_values[0]))])
+            plt.xticks(x_pos, [f'Product{i+1}' for i in range(len(data_values[0]))])
             plt.legend()
             
             plt.tight_layout()
             plt.show()
             
             return {
-                "chart_type": "对比柱状图",
+                "chart_type": "Comparison Bar Chart",
                 "title": title,
                 "datasets_count": len(datasets),
-                "status": "对比图表已生成并显示"
+                "status": "Comparison chart generated and displayed"
             }
         except Exception as e:
-            return {"error": f"对比图表生成错误: {e}"}
+            return {"error": f"Comparison chart generation error: {e}"}
 
 class TwoStepDemo:
     """两步演示类"""
@@ -185,13 +185,13 @@ class TwoStepDemo:
                 "type": "function",
                 "function": {
                     "name": "generate_random_numbers",
-                    "description": "生成指定数量的随机数字",
+                    "description": "Generate specified number of random numbers",
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "count": {"type": "integer", "description": "生成数字的数量"},
-                            "min_val": {"type": "number", "description": "最小值", "default": 0},
-                            "max_val": {"type": "number", "description": "最大值", "default": 100}
+                            "count": {"type": "integer", "description": "Number of random numbers to generate"},
+                            "min_val": {"type": "number", "description": "Minimum value", "default": 0},
+                            "max_val": {"type": "number", "description": "Maximum value", "default": 100}
                         },
                         "required": ["count"]
                     }
@@ -201,18 +201,18 @@ class TwoStepDemo:
                 "type": "function",
                 "function": {
                     "name": "generate_sales_data",
-                    "description": "生成销售数据",
+                    "description": "Generate sales data",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "quarters": {
                                 "type": "array",
                                 "items": {"type": "string"},
-                                "description": "季度列表"
+                                "description": "List of quarters"
                             },
                             "products_per_quarter": {
                                 "type": "integer",
-                                "description": "每季度产品数量",
+                                "description": "Number of products per quarter",
                                 "default": 4
                             }
                         },
@@ -228,20 +228,20 @@ class TwoStepDemo:
                 "type": "function",
                 "function": {
                     "name": "create_bar_chart",
-                    "description": "创建柱状图",
+                    "description": "Create bar chart",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "data": {
                                 "type": "array",
                                 "items": {"type": "number"},
-                                "description": "数据列表"
+                                "description": "Data list"
                             },
-                            "title": {"type": "string", "description": "图表标题"},
+                            "title": {"type": "string", "description": "Chart title"},
                             "labels": {
                                 "type": "array",
                                 "items": {"type": "string"},
-                                "description": "标签列表"
+                                "description": "Label list"
                             }
                         },
                         "required": ["data"]
@@ -252,20 +252,20 @@ class TwoStepDemo:
                 "type": "function",
                 "function": {
                     "name": "create_line_chart",
-                    "description": "创建折线图",
+                    "description": "Create line chart",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "data": {
                                 "type": "array",
                                 "items": {"type": "number"},
-                                "description": "数据列表"
+                                "description": "Data list"
                             },
-                            "title": {"type": "string", "description": "图表标题"},
+                            "title": {"type": "string", "description": "Chart title"},
                             "labels": {
                                 "type": "array",
                                 "items": {"type": "string"},
-                                "description": "标签列表"
+                                "description": "Label list"
                             }
                         },
                         "required": ["data"]
@@ -276,15 +276,15 @@ class TwoStepDemo:
                 "type": "function",
                 "function": {
                     "name": "create_comparison_chart",
-                    "description": "创建对比图表",
+                    "description": "Create comparison chart",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "datasets": {
                                 "type": "object",
-                                "description": "数据集字典，键为类别名，值为数据列表"
+                                "description": "Dataset dictionary with category names as keys and data lists as values"
                             },
-                            "title": {"type": "string", "description": "图表标题"}
+                            "title": {"type": "string", "description": "Chart title"}
                         },
                         "required": ["datasets"]
                     }
@@ -303,9 +303,9 @@ class TwoStepDemo:
             try:
                 return function_map[function_name](**arguments)
             except Exception as e:
-                return {"error": f"数据函数执行错误: {e}"}
+                return {"error": f"Data function execution error: {e}"}
         else:
-            return {"error": f"未知数据函数: {function_name}"}
+            return {"error": f"Unknown data function: {function_name}"}
     
     def call_plot_function(self, function_name: str, arguments: Dict) -> Any:
         """执行绘图函数"""
@@ -319,9 +319,9 @@ class TwoStepDemo:
             try:
                 return function_map[function_name](**arguments)
             except Exception as e:
-                return {"error": f"绘图函数执行错误: {e}"}
+                return {"error": f"Plot function execution error: {e}"}
         else:
-            return {"error": f"未知绘图函数: {function_name}"}
+            return {"error": f"Unknown plot function: {function_name}"}
     
     def step1_get_data(self, user_request: str) -> tuple:
         """第一步：获取数据"""
@@ -331,7 +331,7 @@ class TwoStepDemo:
             messages = [
                 {
                     "role": "system",
-                    "content": "你是数据生成助手。根据用户需求，选择合适的数据生成工具。只生成数据，不进行绘图。"
+                    "content": "You are a data generation assistant. Based on user requirements, select appropriate data generation tools. Only generate data, do not create charts."
                 },
                 {"role": "user", "content": user_request}
             ]
@@ -361,10 +361,10 @@ class TwoStepDemo:
                 
                 return result, function_name
             else:
-                return {"error": "AI未调用数据工具"}, None
+                return {"error": "AI did not call data tools"}, None
                 
         except Exception as e:
-            return {"error": f"第一步执行错误: {e}"}, None
+            return {"error": f"Step 1 execution error: {e}"}, None
     
     def step2_create_plot(self, data_result: Dict, plot_request: str) -> str:
         """第二步：创建图表"""
@@ -372,12 +372,12 @@ class TwoStepDemo:
         
         try:
             # 将数据结果转换为可用的上下文
-            data_context = f"已获取到数据：{json.dumps(data_result, ensure_ascii=False)}"
+            data_context = f"Data obtained: {json.dumps(data_result, ensure_ascii=False)}"
             
             messages = [
                 {
                     "role": "system",
-                    "content": "你是图表绘制助手。根据提供的数据和用户需求，选择合适的绘图工具创建图表。"
+                    "content": "You are a chart drawing assistant. Based on the provided data and user requirements, select appropriate drawing tools to create charts."
                 },
                 {"role": "user", "content": f"{data_context}\n\n{plot_request}"}
             ]
@@ -405,12 +405,12 @@ class TwoStepDemo:
                 result = self.call_plot_function(function_name, arguments)
                 print(f"✅ 图表绘制完成: {result}")
                 
-                return f"图表绘制成功：{result.get('status', '已完成')}"
+                return f"Chart drawing successful: {result.get('status', 'Completed')}"
             else:
-                return "AI未调用绘图工具，可能需要调整请求"
+                return "AI did not call drawing tools, may need to adjust request"
                 
         except Exception as e:
-            return f"第二步执行错误: {e}"
+            return f"Step 2 execution error: {e}"
     
     def run_two_step_demo(self, scenario: Dict):
         """运行两步演示"""
@@ -428,6 +428,8 @@ class TwoStepDemo:
         
         # 第二步：创建图表
         plot_result = self.step2_create_plot(data_result, scenario['plot_request'])
+
+
         print(f"\n🎉 演示完成: {plot_result}")
 
 def main():
@@ -440,15 +442,22 @@ def main():
     print("=" * 50)
     
     # 配置
+    # config = DeepSeekConfig(
+    #     api_key=os.getenv('TONGYI_API_KEY', 'your-api-key-here'),
+    #     base_url=os.getenv('TONGYI_BASE_URL', 'https://api.openai.com/v1'),
+    #     model="qwen-plus",
+    #     temperature=0.1
+    # )
+
     config = DeepSeekConfig(
-        api_key=os.getenv('OPENAI_API_KEY', 'your-api-key-here'),
-        base_url=os.getenv('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
-        model="gpt-4.1",
+        api_key=os.getenv('DEEPSEEK_API_KEY', 'your-api-key-here'),
+        base_url=os.getenv('DEEPSEEK_BASE_URL', 'https://api.openai.com/v1'),
+        model="deepseek-chat",
         temperature=0.1
     )
     
     if config.api_key == 'your-api-key-here':
-        print("⚠️ 请先设置 OPENAI_API_KEY 环境变量")
+        print("⚠️ 请先设置 DEEPSEEK_API_KEY 环境变量")
         return
     
     demo = TwoStepDemo(config)
@@ -458,20 +467,20 @@ def main():
         {
             "title": "随机数据柱状图",
             "description": "生成随机数据，然后用柱状图展示",
-            "data_request": "生成10个随机数字，范围在20到80之间",
-            "plot_request": "用这些数据创建一个柱状图，标题为'随机数据分布'"
+            "data_request": "Generate 10 random numbers between 20 and 80",
+            "plot_request": "Create a bar chart with this data, title 'Random Data Distribution'"
         },
         {
             "title": "销售数据趋势图",
             "description": "生成销售数据，然后用折线图展示趋势",
-            "data_request": "生成第一季度、第二季度、第三季度的销售数据，每季度6个产品",
-            "plot_request": "为每个季度的平均销量创建折线图，标题为'季度销售趋势'"
+            "data_request": "Generate sales data for Q1, Q2, Q3 quarters, 6 products per quarter",
+            "plot_request": "Create a line chart for average sales per quarter, title 'Quarterly Sales Trend'"
         },
         {
             "title": "多季度对比图",
             "description": "生成多季度数据，然后创建对比图表",
-            "data_request": "生成春季、夏季、秋季三个季度的销售数据，每季度4个产品",
-            "plot_request": "创建对比图表显示三个季度的销售数据对比，标题为'季度销售对比'"
+            "data_request": "Generate sales data for Spring, Summer, Autumn quarters, 4 products per quarter",
+            "plot_request": "Create a comparison chart showing sales data for the three quarters, title 'Quarterly Sales Comparison'"
         }
     ]
     
