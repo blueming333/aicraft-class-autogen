@@ -29,7 +29,7 @@ else:
 
 # 定义LLM
 model_client = OpenAIChatCompletionClient(
-    model="qwen-plus",  # 使用阿里千问，支持函数调用
+    model="qwen-plus-2025-01-25",  # 使用阿里千问，支持函数调用
     model_info={
         "function_calling": True,
         "json_output": False,
@@ -107,10 +107,10 @@ async def main() -> None:
     # 运行team，下面是几个不同的示例任务，可以取消注释来测试不同功能
     
     # 1. 查询存储库信息
-    # task = "获取'https://github.com/blueming333/aicraft-class-autogen.git'存储库的的今日最新5次提交记录"
+    task = "获取'https://github.com/blueming333/aicraft-class-autogen.git'存储库的的今日最新5次提交记录,并简要概括今日项目成果"
     
     # 2. 搜索特定代码
-    task = "搜索GitHub上与'MCP server fetch'相关的代码，并简要描述几个最相关的结果"
+    # task = "搜索GitHub上与'MCP server fetch'相关的代码，并简要描述几个最相关的结果"
     
     # 3. 查看特定文件内容
     # task = "获取microsoft/autogen存储库中README.md文件的内容并总结主要功能"
