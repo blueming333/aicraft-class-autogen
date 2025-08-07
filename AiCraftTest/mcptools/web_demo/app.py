@@ -111,11 +111,6 @@ def initialize_database_agent():
 - list_tables: 查看所有表
 - describe_table: 查看表结构
 
-## 数据库信息
-数据库连接已自动建立，无需手动连接：
-- 服务器: rm-wz98mhtjl6c0x072rbo.mysql.rds.aliyuncs.com:3306
-- 数据库: mincode_test
-
 ## 主要数据表
 - users: 用户信息(id, username, email, full_name, age, city, status)
 - products: 产品信息(id, name, description, price, category, stock_quantity)
@@ -125,7 +120,7 @@ def initialize_database_agent():
 1. 使用list_tables查看所有表
 2. 使用describe_table了解表结构
 3. 构建SQL查询并执行
-4. 用清晰格式展示数据
+4. 输出原始的查询结果，同时输出针对数据的总结报告
 
 数据库连接已预先建立，直接开始查询分析即可。""",
             model_client_stream=False
