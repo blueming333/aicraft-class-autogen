@@ -43,6 +43,7 @@ async def main() -> None:
     # 定义Agent
     primary_agent = AssistantAgent(
         name="primary",
+        tools=[],
         model_client=model_client,
         system_message="你是一个乐于助人的AI智能助手。",
         model_client_stream=True

@@ -9,6 +9,7 @@ asyncio==3.4.3
 
 # MCP服务器依赖
 mcp-server-fetch
+mcp[cli]
 protego
 markdownify
 readabilipy
@@ -21,6 +22,12 @@ httpx
 fastapi
 uvicorn
 pydantic
+flask
+flask-cors
+
+# MySQL数据库支持
+pymysql
+mysql-connector-python
 
 # Ollama集成 (用于本地部署模型)
 # 注意：Ollama本身需要单独安装，这只是Python客户端
