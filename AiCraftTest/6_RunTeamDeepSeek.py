@@ -33,7 +33,7 @@ model_client = OpenAIChatCompletionClient(
         "json_output": False,
         "vision": False,
         "stream": True,
-        "family": ModelFamily.R1,
+        "family": ModelFamily.UNKNOWN,  # 使用未知模型家族
     },
     max_tokens=4096,
 )
